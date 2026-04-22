@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Prompt — Conteúdo Estratégico</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1923;
+    --ink-soft: #2c3e50;
+    --accent: #1B4F72;
+    --accent-light: #2E86AB;
+    --accent-glow: #5dade2;
+    --green: #1E8449;
+    --amber: #B7950B;
+    --red: #922B21;
+    --purple: #6C3483;
+    --surface: #f7f9fc;
+    --card: #ffffff;
+    --border: #dde3ed;
+    --muted: #8395a7;
+    --success: #27ae60;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--ink);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent-glow));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+
+  .logo-text span {
+    color: var(--accent-glow);
+  }
+
+  .header-badge {
+    background: rgba(93,173,226,0.15);
+    border: 1px solid rgba(93,173,226,0.3);
+    color: var(--accent-glow);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--ink) 0%, #1a2f45 60%, #1B4F72 100%);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(93,173,226,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(93,173,226,0.12);
+    border: 1px solid rgba(93,173,226,0.25);
+    color: var(--accent-glow);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  .hero-label::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent-glow);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 42px);
+    color: white;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 span {
+    color: var(--accent-glow);
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  /* STEPS INDICATOR */
+  .steps-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    position: sticky;
+    top: 64px;
+    z-index: 90;
+  }
+
+  .step-tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px 14px;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .step-tab.active {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .step-tab.done {
+    color: var(--success);
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .step-tab.active .step-num {
+    background: var(--accent);
+    color: white;
+  }
+
+  .step-tab.done .step-num {
+    background: var(--success);
+    color: white;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* FORM SECTIONS */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .section-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .section-header p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .section-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* FORM FIELDS */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .required {
+    color: #e74c3c;
+    font-size: 11px;
+  }
+
+  .optional {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(46,134,171,0.1);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  .field-hint {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* FORMAT GRID */
+  .format-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .format-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .format-item label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .format-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .format-item input[type="number"] {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    text-align: center;
+    color: var(--ink);
+    background: white;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+
+  .format-item input[type="number"]:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(46,134,171,0.1);
+  }
+
+  .format-total {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .format-total-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .format-total-count {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--ink);
+    transition: color 0.2s;
+  }
+
+  .format-total-count.match { color: var(--success); }
+  .format-total-count.over { color: #e74c3c; }
+
+  /* TOGGLE OPTIONS */
+  .toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toggle-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .toggle-opt input[type="radio"] { display: none; }
+
+  .toggle-opt.selected {
+    border-color: var(--accent);
+    background: rgba(27,79,114,0.04);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .toggle-radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .toggle-opt.selected .toggle-radio {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .toggle-radio::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    display: none;
+  }
+
+  .toggle-opt.selected .toggle-radio::after { display: block; }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: sticky;
+    top: 120px;
+  }
+
+  .output-card {
+    background: var(--ink);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .output-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .output-header span {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    letter-spacing: 0.05em;
+  }
+
+  .output-dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .output-body {
+    padding: 20px;
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+
+  .output-body::-webkit-scrollbar { width: 4px; }
+  .output-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  #prompt-preview {
+    font-family: 'DM Sans', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.75);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .placeholder-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  .placeholder-icon {
+    font-size: 32px;
+    opacity: 0.4;
+  }
+
+  .placeholder-text {
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* BUTTONS */
+  .btn-generate {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn-generate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(27,79,114,0.35);
+  }
+
+  .btn-generate:active { transform: translateY(0); }
+
+  .btn-copy {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--accent-glow);
+    border: 1.5px solid rgba(93,173,226,0.3);
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-copy:hover {
+    background: rgba(93,173,226,0.08);
+    border-color: rgba(93,173,226,0.5);
+  }
+
+  .btn-copy.copied {
+    color: var(--success);
+    border-color: rgba(39,174,96,0.4);
+    background: rgba(39,174,96,0.06);
+  }
+
+  /* STATUS TAGS */
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-missing { background: rgba(231,76,60,0.1); color: #e74c3c; }
+  .tag-ok { background: rgba(39,174,96,0.1); color: var(--success); }
+  .tag-optional { background: rgba(131,149,167,0.12); color: var(--muted); }
+
+  /* FILES CHECKLIST */
+  .files-check {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .files-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .files-header span {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .file-row {
+    padding: 11px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 8px;
+  }
+
+  .file-row:last-child { border-bottom: none; }
+  .file-row:hover { background: var(--surface); }
+
+  .file-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .file-name { flex: 1; }
+
+  /* ALERT */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+
+  .alert.show { display: block; }
+  .alert-warning { background: rgba(183,149,11,0.08); border: 1px solid rgba(183,149,11,0.25); color: #7d6608; }
+  .alert-error { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.25); color: #c0392b; }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+    header { padding: 0 20px; }
+    .hero { padding: 40px 20px 36px; }
+    .steps-bar { padding: 0 20px; overflow-x: auto; }
+    .main { padding: 24px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">PM</div>
+    <div class="logo-text">Prompt <span>Mestre</span></div>
+  </div>
+  <div class="header-badge">v1.0</div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Gerador de Prompt</div>
+    <h1>Conteúdo estratégico<br>pronto em <span>segundos</span></h1>
+    <p>Preencha os dados do cliente, confirme os arquivos disponíveis e copie o prompt gerado diretamente para o Claude.</p>
+  </div>
+</div>
+
+<div class="steps-bar">
+  <div class="step-tab active" id="tab-1">
+    <div class="step-num">1</div> Dados do cliente
+  </div>
+  <div class="step-tab" id="tab-2">
+    <div class="step-num">2</div> Formato dos posts
+  </div>
+  <div class="step-tab" id="tab-3">
+    <div class="step-num">3</div> Arquivos
+  </div>
+</div>
+
+<div class="main">
+  <div class="form-col">
+
+    <!-- SEÇÃO 1: DADOS DO CLIENTE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#E8F4FD;">🏢</div>
+        <div>
+          <h2>Dados do cliente</h2>
+          <p>Informações básicas para identificar o trabalho</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <label>Nome do cliente / empresa <span class="required">* obrigatório</span></label>
+          <input type="text" id="nome" placeholder="ex: Rota do Sol — Itapema" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Segmento <span class="required">* obrigatório</span></label>
+          <input type="text" id="segmento" placeholder="ex: Imobiliária de alto padrão / Clínica odontológica" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Site e redes sociais <span class="optional">opcional</span></label>
+          <input type="text" id="links" placeholder="ex: rotadosol.com.br / @rotadosoloficial" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Mês de referência <span class="required">* obrigatório</span></label>
+          <input type="text" id="mes" placeholder="ex: Abril 2026" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Observações específicas do cliente <span class="optional">opcional</span></label>
+          <textarea id="obs" placeholder="ex: Não quer aparecer em vídeo. Tem lançamento de produto em abril. Evento no dia 15." oninput="updatePreview()"></textarea>
+          <span class="field-hint">Qualquer detalhe que o Claude precisa saber antes de criar o conteúdo.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: QUANTIDADE DE POSTS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#EAFAF1;">📊</div>
+        <div>
+          <h2>Quantidade de posts</h2>
+          <p>Defina o volume contratado pelo cliente</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="field">
+            <label>Posts orgânicos <span class="required">*</span></label>
+            <input type="number" id="qtd-organico" min="0" max="60" value="" placeholder="ex: 15" oninput="updatePreview(); calcTotal()">
+          </div>
+          <div class="field">
+            <label>Anúncios pagos <span class="required">*</span></label>
+            <input type="number" id="qtd-pago" min="0" max="30" value="" placeholder="ex: 8" oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: MIX DE FORMATOS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#F4ECF7;">🎨</div>
+        <div>
+          <h2>Mix de formatos orgânicos</h2>
+          <p>Defina a distribuição ou deixe a IA decidir</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="toggle-group" id="formato-mode">
+          <label class="toggle-opt selected" onclick="selectMode('manual', this)">
+            <input type="radio" name="modo" value="manual" checked>
+            <div class="toggle-radio"></div>
+            Definir a distribuição de formatos
+          </label>
+          <label class="toggle-opt" onclick="selectMode('auto', this)">
+            <input type="radio" name="modo" value="auto">
+            <div class="toggle-radio"></div>
+            Deixar a IA decidir o melhor formato para cada tema
+          </label>
+        </div>
+
+        <div id="formato-manual">
+          <div class="format-grid">
+            <div class="format-item">
+              <label><span class="format-dot" style="background:#1B4F72;"></span>Carrosséis</label>
+              <input type="number" id="fmt-carrossel" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+            </div>
+            <div class="format-item">
+              <label><span class="format-dot" style="background:#1E8449;"></span>Cards únicos</label>
+              <input type="number" id="fmt-card" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+            </div>
+            <div class="format-item">
+              <label><span class="format-dot" style="background:#6C3483;"></span>Reels</label>
+              <input type="number" id="fmt-reels" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+            </div>
+            <div class="format-item">
+              <label><span class="format-dot" style="background:#B7410E;"></span>Stories</label>
+              <input type="number" id="fmt-stories" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+            </div>
+          </div>
+
+          <div class="format-total" id="format-total-box">
+            <span class="format-total-label">Total de formatos</span>
+            <span class="format-total-count" id="format-total-count">0</span>
+          </div>
+
+          <div class="alert alert-warning" id="alert-mismatch">
+            ⚠️ O total de formatos não bate com a quantidade de posts orgânicos.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- FILES CHECKLIST -->
+    <div class="files-check">
+      <div class="files-header">
+        <span>📎 Arquivos disponíveis</span>
+      </div>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-transcricao" onchange="updatePreview()">
+        <span class="file-name">Transcrição da reunião (Tactiq)</span>
+        <span class="status-tag tag-missing" id="tag-transcricao">obrigatório</span>
+      </label>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-personas" onchange="updatePreview()">
+        <span class="file-name">Personas do cliente ideal</span>
+        <span class="status-tag tag-missing" id="tag-personas">obrigatório</span>
+      </label>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-empatia" onchange="updatePreview()">
+        <span class="file-name">Mapa de empatia</span>
+        <span class="status-tag tag-optional" id="tag-empatia">recomendado</span>
+      </label>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-proposta" onchange="updatePreview()">
+        <span class="file-name">Proposta de valor</span>
+        <span class="status-tag tag-optional" id="tag-proposta">recomendado</span>
+      </label>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-site" onchange="updatePreview()">
+        <span class="file-name">Site / redes sociais</span>
+        <span class="status-tag tag-optional" id="tag-site">recomendado</span>
+      </label>
+      <label class="file-row" onclick="updatePreview()">
+        <input type="checkbox" id="file-extras" onchange="updatePreview()">
+        <span class="file-name">Materiais extras</span>
+        <span class="status-tag tag-optional">opcional</span>
+      </label>
+    </div>
+
+    <div style="height:16px;"></div>
+
+    <!-- OUTPUT CARD -->
+    <div class="output-card">
+      <div class="output-header">
+        <span>PROMPT GERADO</span>
+        <div class="output-dots">
+          <div class="dot" style="background:#ff5f57;"></div>
+          <div class="dot" style="background:#febc2e;"></div>
+          <div class="dot" style="background:#28c840;"></div>
+        </div>
+      </div>
+      <div class="output-body" id="output-body">
+        <div class="placeholder-state" id="placeholder">
+          <div class="placeholder-icon">✦</div>
+          <div class="placeholder-text">Preencha os campos<br>ao lado para gerar o prompt</div>
+        </div>
+        <pre id="prompt-preview" style="display:none;"></pre>
+      </div>
+    </div>
+
+    <button class="btn-generate" onclick="generatePrompt()">
+      ⚡ Gerar prompt completo
+    </button>
+    <button class="btn-copy" id="btn-copy" onclick="copyPrompt()" style="display:none;">
+      📋 Copiar para o Claude
+    </button>
+
+  </div>
+</div>
+
+<script>
+let currentMode = 'manual';
+let generatedPrompt = '';
+
+function selectMode(mode, el) {
+  currentMode = mode;
+  document.querySelectorAll('.toggle-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('formato-manual').style.display = mode === 'manual' ? 'flex' : 'none';
+  document.getElementById('formato-manual').style.flexDirection = 'column';
+  document.getElementById('formato-manual').style.gap = '12px';
+  updatePreview();
+}
+
+function calcTotal() {
+  const organico = parseInt(document.getElementById('qtd-organico').value) || 0;
+  const c = parseInt(document.getElementById('fmt-carrossel').value) || 0;
+  const k = parseInt(document.getElementById('fmt-card').value) || 0;
+  const r = parseInt(document.getElementById('fmt-reels').value) || 0;
+  const s = parseInt(document.getElementById('fmt-stories').value) || 0;
+  const total = c + k + r + s;
+
+  const el = document.getElementById('format-total-count');
+  const alert = document.getElementById('alert-mismatch');
+  el.textContent = total;
+  el.className = 'format-total-count';
+
+  if (organico > 0 && total !== organico) {
+    el.classList.add('over');
+    alert.classList.add('show');
+    alert.textContent = total > organico
+      ? `⚠️ Total de formatos (${total}) é maior que os posts orgânicos (${organico}). Ajuste.`
+      : `⚠️ Total de formatos (${total}) é menor que os posts orgânicos (${organico}). Ajuste.`;
+  } else if (organico > 0 && total === organico) {
+    el.classList.add('match');
+    alert.classList.remove('show');
+  } else {
+    alert.classList.remove('show');
+  }
+}
+
+function updateFileTag(id, tagId, checked, type) {
+  const tag = document.getElementById(tagId);
+  if (!tag) return;
+  if (checked) {
+    tag.className = 'status-tag tag-ok';
+    tag.textContent = '✓ disponível';
+  } else {
+    tag.className = type === 'required' ? 'status-tag tag-missing' : 'status-tag tag-optional';
+    tag.textContent = type === 'required' ? 'obrigatório' : 'recomendado';
+  }
+}
+
+function updatePreview() {
+  // Update file tags
+  const files = [
+    { id: 'file-transcricao', tagId: 'tag-transcricao', type: 'required' },
+    { id: 'file-personas', tagId: 'tag-personas', type: 'required' },
+    { id: 'file-empatia', tagId: 'tag-empatia', type: 'recommended' },
+    { id: 'file-proposta', tagId: 'tag-proposta', type: 'recommended' },
+    { id: 'file-site', tagId: 'tag-site', type: 'recommended' },
+  ];
+  files.forEach(f => {
+    const checked = document.getElementById(f.id)?.checked;
+    updateFileTag(f.id, f.tagId, checked, f.type);
+  });
+
+  const nome = document.getElementById('nome').value;
+  if (!nome) return;
+
+  const preview = buildPromptText(true);
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('prompt-preview').style.display = 'block';
+  document.getElementById('prompt-preview').textContent = preview.slice(0, 800) + (preview.length > 800 ? '\n\n... [clique em "Gerar prompt completo" para ver tudo]' : '');
+}
+
+function buildFormatLine() {
+  if (currentMode === 'auto') return 'Deixe a IA decidir o melhor formato para cada tema';
+  const c = parseInt(document.getElementById('fmt-carrossel').value) || 0;
+  const k = parseInt(document.getElementById('fmt-card').value) || 0;
+  const r = parseInt(document.getElementById('fmt-reels').value) || 0;
+  const s = parseInt(document.getElementById('fmt-stories').value) || 0;
+  const parts = [];
+  if (c) parts.push(`${c} carrossel${c > 1 ? 'éis' : ''}`);
+  if (k) parts.push(`${k} card${k > 1 ? 's' : ''} único${k > 1 ? 's' : ''}`);
+  if (r) parts.push(`${r} reel${r > 1 ? 's' : ''}`);
+  if (s) parts.push(`${s} storie${s > 1 ? 's' : ''}`);
+  return parts.length ? parts.join(', ') : 'não definido';
+}
+
+function buildFilesList() {
+  const map = [
+    { id: 'file-transcricao', label: 'Transcrição da reunião (Tactiq)' },
+    { id: 'file-personas', label: 'Personas do cliente ideal' },
+    { id: 'file-empatia', label: 'Mapa de empatia' },
+    { id: 'file-proposta', label: 'Proposta de valor' },
+    { id: 'file-site', label: 'Site e redes sociais' },
+    { id: 'file-extras', label: 'Materiais extras' },
+  ];
+  const available = map.filter(f => document.getElementById(f.id)?.checked).map(f => `✅ ${f.label}`);
+  const missing = map.filter(f => !document.getElementById(f.id)?.checked).map(f => `❌ ${f.label}`);
+  return [...available, ...missing].join('\n');
+}
+
+function buildPromptText(preview = false) {
+  const nome = document.getElementById('nome').value || '[NOME DO CLIENTE]';
+  const segmento = document.getElementById('segmento').value || '[SEGMENTO]';
+  const links = document.getElementById('links').value || 'Não fornecido';
+  const mes = document.getElementById('mes').value || '[MÊS]';
+  const organico = document.getElementById('qtd-organico').value || '[QTDE]';
+  const pago = document.getElementById('qtd-pago').value || '[QTDE]';
+  const obs = document.getElementById('obs').value || 'Nenhuma';
+  const formatLine = buildFormatLine();
+  const filesBlock = preview ? '(conforme arquivos anexados)' : buildFilesList();
+
+  return `Você é um estrategista sênior de conteúdo para redes sociais especializado em marketing digital para empresas B2C e B2B de médio e alto padrão. Seu trabalho é produzir conteúdo estratégico completo, pronto para execução por um designer, com base nos documentos do cliente fornecidos.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DADOS DO CLIENTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Nome do cliente / empresa:    ${nome}
+Segmento:                     ${segmento}
+Site e redes sociais:         ${links}
+Mês de referência:            ${mes}
+Posts orgânicos este mês:     ${organico}
+Anúncios pagos este mês:      ${pago}
+Mix de formatos orgânicos:    ${formatLine}
+Observações específicas:      ${obs}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOCUMENTOS FORNECIDOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${filesBlock}
+
+Analise todos os arquivos anexados. Se algum documento OBRIGATÓRIO estiver faltando (transcrição ou personas), informe claramente o impacto e pergunte se deve prosseguir. Se documentos recomendados estiverem faltando, adapte e sinalize o que ficou mais genérico.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROCESSO — SIGA ESTA ORDEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ETAPA 1 — DIAGNÓSTICO
+Leia todos os documentos. Produza:
+  1.1 Resumo do negócio (3 a 5 linhas)
+  1.2 Tom de voz (tabela: Como falar | Como NÃO falar)
+  1.3 Persona principal (perfil, dores, desejos, objeções, gatilho de compra)
+  1.4 Documentos ausentes e impacto
+
+ETAPA 2 — PILARES DE CONTEÚDO
+Defina 5 pilares estratégicos. Para cada um: Nome / Objetivo / % do conteúdo.
+Cubra obrigatoriamente: Autoridade · Educação · Estilo de vida · Prova social · 1 pilar específico do segmento.
+
+ETAPA 3 — MAPEAMENTO DE TEMAS
+Gere 30 temas alinhados com as dores e desejos das personas.
+Tabela: Nº | Pilar | Tema | Formato sugerido
+Selecione automaticamente os ${organico} melhores para compor o mês, justificando a seleção.
+
+ETAPA 4 — CONTEÚDO ORGÂNICO (${organico} posts)
+Use este bloco para cada post:
+
+  POST #[N] | [CARROSSEL / CARD ÚNICO / REELS / STORIES]
+  Pilar: [nome] | Tema: [título] | Especificação: [ex: 5 slides / 45s]
+  LEGENDA / ROTEIRO: [conteúdo completo]
+  INSTRUÇÃO PARA O DESIGNER: [descrição visual detalhada]
+
+Regras por formato:
+  CARROSSEL: cada slide individualmente, CTA no último, máximo 7 slides
+  CARD ÚNICO: título + corpo + CTA. Estilo: frase de impacto / dado em destaque / foto com texto
+  REELS: HOOK (0-4s) / DESENVOLVIMENTO / VIRADA / CTA + instrução de gravação
+  STORIES: cada story individualmente, stickers nativos onde aplicável, máximo 7 por sequência
+
+ETAPA 5 — TRÁFEGO PAGO (${pago} anúncios)
+Use este bloco para cada anúncio:
+
+  ANÚNCIO #[N] | [nome]
+  Objetivo: [ex: lead / reconhecimento / conversão]
+  Público: [idade, localização, interesses, nível de funil]
+  Tipo: [Topo / Meio / Fundo de funil]
+  LEGENDA: [headline + corpo + CTA]
+  INSTRUÇÃO PARA O DESIGNER: [criativo, cores, botão]
+
+Regras: mínimo 2 topo + 2 meio + 2 fundo de funil. Pelo menos 1 remarketing e 1 prova social.
+
+ETAPA 6 — REVISÃO CRÍTICA AUTOMÁTICA
+Responda e CORRIJA (não só aponte) se:
+  1. Algum post soa genérico?
+  2. Tom de voz está coerente?
+  3. Algum CTA está fraco?
+  4. Distribuição de pilares equilibrada?
+  5. Funil dos anúncios completo?
+
+ETAPA 7 — CALENDÁRIO EDITORIAL
+Tabela: Data | Pilar | Conteúdo | Formato | Status
+3 posts/semana (seg, qua, sex ou ter, qui, sáb).
+Status padrão: "Aguardando criativo" ou "Aguardando gravação".
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGRAS INEGOCIÁVEIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Nunca genérico — conteúdo específico para este cliente
+2. Protagonista humano sempre presente em autoridade e reels
+3. CTA em todo post — direto e alinhado ao pilar
+4. Instrução para designer obrigatória — o designer não adivinha
+5. Orgânico e pago coerentes — mesma narrativa de marca
+6. Tom de voz respeitado — nunca imponha estilo externo
+7. Formato serve o conteúdo — carrossel é escolha, não padrão
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ENTREGA FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ao concluir, apresente RESUMO EXECUTIVO:
+  → Total de posts orgânicos + distribuição de formatos
+  → Total de anúncios + distribuição por funil
+  → Os 3 posts de maior potencial de engajamento e por quê
+  → Os 2 anúncios de maior potencial de conversão e por quê
+  → Alertas ou recomendações estratégicas (máximo 3)`;
+}
+
+function generatePrompt() {
+  const nome = document.getElementById('nome').value;
+  const segmento = document.getElementById('segmento').value;
+  const mes = document.getElementById('mes').value;
+  const organico = document.getElementById('qtd-organico').value;
+  const pago = document.getElementById('qtd-pago').value;
+
+  if (!nome || !segmento || !mes || !organico || !pago) {
+    alert('Preencha pelo menos: Nome, Segmento, Mês, Quantidade de posts orgânicos e pagos.');
+    return;
+  }
+
+  generatedPrompt = buildPromptText(false);
+
+  document.getElementById('placeholder').style.display = 'none';
+  const preview = document.getElementById('prompt-preview');
+  preview.style.display = 'block';
+  preview.textContent = generatedPrompt;
+
+  document.getElementById('btn-copy').style.display = 'flex';
+
+  preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyPrompt() {
+  if (!generatedPrompt) {
+    generatePrompt();
+    return;
+  }
+  navigator.clipboard.writeText(generatedPrompt).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✓ Copiado! Cole no Claude agora';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copiar para o Claude';
+      btn.classList.remove('copied');
+    }, 3000);
+  });
+}
+
+// Init
+document.getElementById('formato-manual').style.display = 'flex';
+document.getElementById('formato-manual').style.flexDirection = 'column';
+document.getElementById('formato-manual').style.gap = '12px';
+</script>
+</body>
+</html>
