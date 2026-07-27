@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gerador de Prompt — Conteúdo Estratégico</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
   :root {
     --ink: #0f1923;
@@ -32,7 +33,6 @@
     min-height: 100vh;
   }
 
-  /* HEADER */
   header {
     background: var(--ink);
     padding: 0 40px;
@@ -88,7 +88,6 @@
     letter-spacing: 0.05em;
   }
 
-  /* HERO */
   .hero {
     background: linear-gradient(135deg, var(--ink) 0%, #1a2f45 60%, #1B4F72 100%);
     padding: 60px 40px 50px;
@@ -163,7 +162,6 @@
     max-width: 560px;
   }
 
-  /* STEPS INDICATOR */
   .steps-bar {
     background: white;
     border-bottom: 1px solid var(--border);
@@ -223,7 +221,6 @@
     color: white;
   }
 
-  /* MAIN LAYOUT */
   .main {
     max-width: 1100px;
     margin: 0 auto;
@@ -234,7 +231,6 @@
     align-items: start;
   }
 
-  /* FORM SECTIONS */
   .section {
     background: var(--card);
     border: 1px solid var(--border);
@@ -282,7 +278,6 @@
     gap: 18px;
   }
 
-  /* FORM FIELDS */
   .field {
     display: flex;
     flex-direction: column;
@@ -343,7 +338,6 @@
     line-height: 1.4;
   }
 
-  /* FORMAT GRID */
   .format-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -420,7 +414,6 @@
   .format-total-count.match { color: var(--success); }
   .format-total-count.over { color: #e74c3c; }
 
-  /* TOGGLE OPTIONS */
   .toggle-group {
     display: flex;
     flex-direction: column;
@@ -477,7 +470,6 @@
 
   .toggle-opt.selected .toggle-radio::after { display: block; }
 
-  /* SIDEBAR */
   .sidebar {
     position: sticky;
     top: 120px;
@@ -558,7 +550,6 @@
     line-height: 1.5;
   }
 
-  /* BUTTONS */
   .btn-generate {
     width: 100%;
     padding: 16px;
@@ -615,7 +606,6 @@
     background: rgba(39,174,96,0.06);
   }
 
-  /* STATUS TAGS */
   .status-tag {
     display: inline-flex;
     align-items: center;
@@ -630,7 +620,6 @@
   .tag-ok { background: rgba(39,174,96,0.1); color: var(--success); }
   .tag-optional { background: rgba(131,149,167,0.12); color: var(--muted); }
 
-  /* FILES CHECKLIST */
   .files-check {
     background: var(--card);
     border: 1px solid var(--border);
@@ -679,7 +668,6 @@
 
   .file-name { flex: 1; }
 
-  /* ALERT */
   .alert {
     padding: 12px 16px;
     border-radius: 8px;
@@ -692,7 +680,6 @@
   .alert-warning { background: rgba(183,149,11,0.08); border: 1px solid rgba(183,149,11,0.25); color: #7d6608; }
   .alert-error { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.25); color: #c0392b; }
 
-  /* RESPONSIVE */
   @media (max-width: 860px) {
     .main { grid-template-columns: 1fr; }
     .sidebar { position: static; }
@@ -700,6 +687,77 @@
     .hero { padding: 40px 20px 36px; }
     .steps-bar { padding: 0 20px; overflow-x: auto; }
     .main { padding: 24px 20px 60px; }
+  }
+
+  .result-summary {
+    background: #eaf2fb;
+    border: 1px solid rgba(27,79,114,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .result-summary strong {
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Syne', sans-serif;
+    color: var(--accent);
+  }
+  .result-summary p { line-height: 1.5; color: var(--ink-soft); }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .result-card-header {
+    margin-bottom: 10px;
+  }
+  .result-card-header strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .result-card-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .result-card textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    resize: vertical;
+  }
+  .result-card .field { margin-bottom: 8px; }
+  .result-card .field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .btn-copy-card {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .btn-copy-card:hover { background: rgba(93,173,226,0.08); }
+
+  .file-row {
+    cursor: pointer;
   }
 </style>
 </head>
@@ -783,7 +841,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div class="field">
             <label>Posts orgânicos <span class="required">*</span></label>
-            <input type="number" id="qtd-organico" min="0" max="60" value="" placeholder="ex: 15" oninput="updatePreview(); calcTotal()">
+            <input type="number" id="qtd-organico" min="0" max="60" value="" placeholder="ex: 15" oninput="calcTotal()">
           </div>
           <div class="field">
             <label>Anúncios pagos <span class="required">*</span></label>
@@ -820,19 +878,19 @@
           <div class="format-grid">
             <div class="format-item">
               <label><span class="format-dot" style="background:#1B4F72;"></span>Carrosséis</label>
-              <input type="number" id="fmt-carrossel" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+              <input type="number" id="fmt-carrossel" min="0" max="20" value="" placeholder="0" oninput="calcTotal()">
             </div>
             <div class="format-item">
               <label><span class="format-dot" style="background:#1E8449;"></span>Cards únicos</label>
-              <input type="number" id="fmt-card" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+              <input type="number" id="fmt-card" min="0" max="20" value="" placeholder="0" oninput="calcTotal()">
             </div>
             <div class="format-item">
               <label><span class="format-dot" style="background:#6C3483;"></span>Reels</label>
-              <input type="number" id="fmt-reels" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+              <input type="number" id="fmt-reels" min="0" max="20" value="" placeholder="0" oninput="calcTotal()">
             </div>
             <div class="format-item">
               <label><span class="format-dot" style="background:#B7410E;"></span>Stories</label>
-              <input type="number" id="fmt-stories" min="0" max="20" value="" placeholder="0" oninput="updatePreview(); calcTotal()">
+              <input type="number" id="fmt-stories" min="0" max="20" value="" placeholder="0" oninput="calcTotal()">
             </div>
           </div>
 
@@ -853,41 +911,42 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
 
-    <!-- FILES CHECKLIST -->
+    <!-- FILES UPLOAD -->
     <div class="files-check">
       <div class="files-header">
-        <span>📎 Arquivos disponíveis</span>
+        <span>📎 Documentos do cliente</span>
       </div>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-transcricao" onchange="updatePreview()">
-        <span class="file-name">Transcrição da reunião (Tactiq)</span>
+      <label class="file-row" for="file-transcricao">
+        <input type="file" id="file-transcricao" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'transcricao','required')">
+        <span class="file-name" id="file-name-transcricao">Transcrição da reunião (Tactiq)</span>
         <span class="status-tag tag-missing" id="tag-transcricao">obrigatório</span>
       </label>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-personas" onchange="updatePreview()">
-        <span class="file-name">Personas do cliente ideal</span>
+      <label class="file-row" for="file-personas">
+        <input type="file" id="file-personas" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'personas','required')">
+        <span class="file-name" id="file-name-personas">Personas do cliente ideal (A4)</span>
         <span class="status-tag tag-missing" id="tag-personas">obrigatório</span>
       </label>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-empatia" onchange="updatePreview()">
-        <span class="file-name">Mapa de empatia</span>
+      <label class="file-row" for="file-empatia">
+        <input type="file" id="file-empatia" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'empatia','recommended')">
+        <span class="file-name" id="file-name-empatia">Mapa de empatia (A2)</span>
         <span class="status-tag tag-optional" id="tag-empatia">recomendado</span>
       </label>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-proposta" onchange="updatePreview()">
-        <span class="file-name">Proposta de valor</span>
+      <label class="file-row" for="file-proposta">
+        <input type="file" id="file-proposta" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'proposta','recommended')">
+        <span class="file-name" id="file-name-proposta">Proposta de valor (A3)</span>
         <span class="status-tag tag-optional" id="tag-proposta">recomendado</span>
       </label>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-site" onchange="updatePreview()">
-        <span class="file-name">Site / redes sociais</span>
+      <label class="file-row" for="file-site">
+        <input type="file" id="file-site" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'site','recommended')">
+        <span class="file-name" id="file-name-site">Site / redes sociais</span>
         <span class="status-tag tag-optional" id="tag-site">recomendado</span>
       </label>
-      <label class="file-row" onclick="updatePreview()">
-        <input type="checkbox" id="file-extras" onchange="updatePreview()">
-        <span class="file-name">Materiais extras</span>
+      <label class="file-row" for="file-extras">
+        <input type="file" id="file-extras" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'extras','optional')">
+        <span class="file-name" id="file-name-extras">Materiais extras</span>
         <span class="status-tag tag-optional">opcional</span>
       </label>
+      <div class="alert alert-warning" id="alert-upload" style="margin:12px;"></div>
     </div>
 
     <div style="height:16px;"></div>
@@ -905,7 +964,7 @@
       <div class="output-body" id="output-body">
         <div class="placeholder-state" id="placeholder">
           <div class="placeholder-icon">✦</div>
-          <div class="placeholder-text">Preencha os campos<br>ao lado para gerar o prompt</div>
+          <div class="placeholder-text">Anexe os documentos e preencha os campos<br>ao lado para gerar o prompt</div>
         </div>
         <pre id="prompt-preview" style="display:none;"></pre>
       </div>
@@ -924,6 +983,54 @@
 <script>
 let currentMode = 'manual';
 let generatedPrompt = '';
+
+// Guarda o texto extraído de cada arquivo anexado
+const uploadedFiles = {
+  transcricao: null,
+  personas: null,
+  empatia: null,
+  proposta: null,
+  site: null,
+  extras: null
+};
+
+async function extractTextFromFile(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.docx')) {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  }
+  return await file.text();
+}
+
+async function handleFileUpload(input, key, type) {
+  const alertBox = document.getElementById('alert-upload');
+  const nameLabel = document.getElementById('file-name-' + key);
+  const tag = document.getElementById('tag-' + key);
+  const file = input.files[0];
+  if (!file) return;
+
+  const baseLabel = nameLabel.textContent.split(' — ')[0];
+  nameLabel.textContent = `${baseLabel} — lendo...`;
+
+  try {
+    const text = await extractTextFromFile(file);
+    uploadedFiles[key] = { filename: file.name, content: text };
+    nameLabel.textContent = `${baseLabel} — ${file.name}`;
+    if (tag) {
+      tag.className = 'status-tag tag-ok';
+      tag.textContent = '✓ anexado';
+    }
+    alertBox.classList.remove('show');
+    updatePreview();
+  } catch (err) {
+    nameLabel.textContent = baseLabel;
+    alertBox.classList.add('show');
+    alertBox.textContent = `⚠️ Não foi possível ler o arquivo "${file.name}". Tente novamente ou use um .txt. (${err.message})`;
+    uploadedFiles[key] = null;
+  }
+}
 
 function selectMode(mode, el) {
   currentMode = mode;
@@ -960,41 +1067,7 @@ function calcTotal() {
   } else {
     alert.classList.remove('show');
   }
-}
-
-function updateFileTag(id, tagId, checked, type) {
-  const tag = document.getElementById(tagId);
-  if (!tag) return;
-  if (checked) {
-    tag.className = 'status-tag tag-ok';
-    tag.textContent = '✓ disponível';
-  } else {
-    tag.className = type === 'required' ? 'status-tag tag-missing' : 'status-tag tag-optional';
-    tag.textContent = type === 'required' ? 'obrigatório' : 'recomendado';
-  }
-}
-
-function updatePreview() {
-  // Update file tags
-  const files = [
-    { id: 'file-transcricao', tagId: 'tag-transcricao', type: 'required' },
-    { id: 'file-personas', tagId: 'tag-personas', type: 'required' },
-    { id: 'file-empatia', tagId: 'tag-empatia', type: 'recommended' },
-    { id: 'file-proposta', tagId: 'tag-proposta', type: 'recommended' },
-    { id: 'file-site', tagId: 'tag-site', type: 'recommended' },
-  ];
-  files.forEach(f => {
-    const checked = document.getElementById(f.id)?.checked;
-    updateFileTag(f.id, f.tagId, checked, f.type);
-  });
-
-  const nome = document.getElementById('nome').value;
-  if (!nome) return;
-
-  const preview = buildPromptText(true);
-  document.getElementById('placeholder').style.display = 'none';
-  document.getElementById('prompt-preview').style.display = 'block';
-  document.getElementById('prompt-preview').textContent = preview.slice(0, 800) + (preview.length > 800 ? '\n\n... [clique em "Gerar prompt completo" para ver tudo]' : '');
+  updatePreview();
 }
 
 function buildFormatLine() {
@@ -1011,18 +1084,39 @@ function buildFormatLine() {
   return parts.length ? parts.join(', ') : 'não definido';
 }
 
-function buildFilesList() {
+function buildFilesBlock(preview = false) {
   const map = [
-    { id: 'file-transcricao', label: 'Transcrição da reunião (Tactiq)' },
-    { id: 'file-personas', label: 'Personas do cliente ideal' },
-    { id: 'file-empatia', label: 'Mapa de empatia' },
-    { id: 'file-proposta', label: 'Proposta de valor' },
-    { id: 'file-site', label: 'Site e redes sociais' },
-    { id: 'file-extras', label: 'Materiais extras' },
+    { key: 'transcricao', label: 'Transcrição da reunião (Tactiq)' },
+    { key: 'personas', label: 'Personas do cliente ideal (A4)' },
+    { key: 'empatia', label: 'Mapa de empatia (A2)' },
+    { key: 'proposta', label: 'Proposta de valor (A3)' },
+    { key: 'site', label: 'Site / redes sociais' },
+    { key: 'extras', label: 'Materiais extras' },
   ];
-  const available = map.filter(f => document.getElementById(f.id)?.checked).map(f => `✅ ${f.label}`);
-  const missing = map.filter(f => !document.getElementById(f.id)?.checked).map(f => `❌ ${f.label}`);
-  return [...available, ...missing].join('\n');
+
+  const status = map.map(f => uploadedFiles[f.key]
+    ? `✅ ${f.label} (${uploadedFiles[f.key].filename})`
+    : `❌ ${f.label}`
+  ).join('\n');
+
+  if (preview) return status;
+
+  const contents = map
+    .filter(f => uploadedFiles[f.key])
+    .map(f => `\n--- ${f.label.toUpperCase()} (${uploadedFiles[f.key].filename}) ---\n${uploadedFiles[f.key].content}`)
+    .join('\n');
+
+  return status + '\n' + contents;
+}
+
+function updatePreview() {
+  const nome = document.getElementById('nome').value;
+  if (!nome) return;
+
+  const preview = buildPromptText(true);
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('prompt-preview').style.display = 'block';
+  document.getElementById('prompt-preview').textContent = preview.slice(0, 800) + (preview.length > 800 ? '\n\n... [clique em "Gerar prompt completo" para ver tudo]' : '');
 }
 
 function buildPromptText(preview = false) {
@@ -1034,7 +1128,7 @@ function buildPromptText(preview = false) {
   const pago = document.getElementById('qtd-pago').value || '[QTDE]';
   const obs = document.getElementById('obs').value || 'Nenhuma';
   const formatLine = buildFormatLine();
-  const filesBlock = preview ? '(conforme arquivos anexados)' : buildFilesList();
+  const filesBlock = buildFilesBlock(preview);
 
   return `Você é um estrategista sênior de conteúdo para redes sociais especializado em marketing digital para empresas B2C e B2B de médio e alto padrão. Seu trabalho é produzir conteúdo estratégico completo, pronto para execução por um designer, com base nos documentos do cliente fornecidos.
 
@@ -1057,7 +1151,7 @@ DOCUMENTOS FORNECIDOS
 
 ${filesBlock}
 
-Analise todos os arquivos anexados. Se algum documento OBRIGATÓRIO estiver faltando (transcrição ou personas), informe claramente o impacto e pergunte se deve prosseguir. Se documentos recomendados estiverem faltando, adapte e sinalize o que ficou mais genérico.
+Analise todos os documentos anexados (o conteúdo de cada um está incluído acima). Se algum documento OBRIGATÓRIO estiver faltando (transcrição ou personas), informe claramente o impacto e pergunte se deve prosseguir. Se documentos recomendados estiverem faltando, adapte e sinalize o que ficou mais genérico.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROCESSO — SIGA ESTA ORDEM
@@ -1152,6 +1246,10 @@ function generatePrompt() {
   if (!nome || !segmento || !mes || !organico || !pago) {
     alert('Preencha pelo menos: Nome, Segmento, Mês, Quantidade de posts orgânicos e pagos.');
     return;
+  }
+  if (!uploadedFiles.transcricao || !uploadedFiles.personas) {
+    const seguir = confirm('A Transcrição e/ou as Personas não foram anexadas. O prompt ficará mais genérico. Deseja continuar mesmo assim?');
+    if (!seguir) return;
   }
 
   generatedPrompt = buildPromptText(false);
