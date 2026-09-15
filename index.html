@@ -813,12 +813,25 @@
           <input type="text" id="segmento" placeholder="ex: Imobiliária de alto padrão / Clínica odontológica" oninput="updatePreview()">
         </div>
         <div class="field">
-          <label>Site e redes sociais <span class="optional">opcional</span></label>
-          <input type="text" id="links" placeholder="ex: rotadosol.com.br / @rotadosoloficial" oninput="updatePreview()">
+          <label>Instagram <span class="optional">opcional</span></label>
+          <input type="text" id="instagram" placeholder="ex: @rotadosoloficial" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Site <span class="optional">opcional</span></label>
+          <input type="text" id="site_url" placeholder="ex: rotadosol.com.br" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Landing page <span class="optional">opcional</span></label>
+          <input type="text" id="landing" placeholder="ex: rotadosol.com.br/lancamento" oninput="updatePreview()">
         </div>
         <div class="field">
           <label>Mês de referência <span class="required">* obrigatório</span></label>
           <input type="text" id="mes" placeholder="ex: Abril 2026" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Temas a direcionar <span class="optional">opcional</span></label>
+          <textarea id="temas" placeholder="ex: Precisamos falar sobre o novo empreendimento X e reforçar a credibilidade da imobiliária na região" oninput="updatePreview()"></textarea>
+          <span class="field-hint">Temas específicos que precisam ser trabalhados no conteúdo estratégico deste mês.</span>
         </div>
         <div class="field">
           <label>Observações específicas do cliente <span class="optional">opcional</span></label>
@@ -917,14 +930,14 @@
         <span>📎 Documentos do cliente</span>
       </div>
       <label class="file-row" for="file-transcricao">
-        <input type="file" id="file-transcricao" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'transcricao','required')">
+        <input type="file" id="file-transcricao" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'transcricao','recommended')">
         <span class="file-name" id="file-name-transcricao">Transcrição da reunião (Tactiq)</span>
-        <span class="status-tag tag-missing" id="tag-transcricao">obrigatório</span>
+        <span class="status-tag tag-optional" id="tag-transcricao">recomendado</span>
       </label>
       <label class="file-row" for="file-personas">
-        <input type="file" id="file-personas" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'personas','required')">
+        <input type="file" id="file-personas" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'personas','recommended')">
         <span class="file-name" id="file-name-personas">Personas do cliente ideal (A4)</span>
-        <span class="status-tag tag-missing" id="tag-personas">obrigatório</span>
+        <span class="status-tag tag-optional" id="tag-personas">recomendado</span>
       </label>
       <label class="file-row" for="file-empatia">
         <input type="file" id="file-empatia" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'empatia','recommended')">
@@ -935,11 +948,6 @@
         <input type="file" id="file-proposta" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'proposta','recommended')">
         <span class="file-name" id="file-name-proposta">Proposta de valor (A3)</span>
         <span class="status-tag tag-optional" id="tag-proposta">recomendado</span>
-      </label>
-      <label class="file-row" for="file-site">
-        <input type="file" id="file-site" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'site','recommended')">
-        <span class="file-name" id="file-name-site">Site / redes sociais</span>
-        <span class="status-tag tag-optional" id="tag-site">recomendado</span>
       </label>
       <label class="file-row" for="file-extras">
         <input type="file" id="file-extras" accept=".txt,.docx,.md" style="display:none" onchange="handleFileUpload(this,'extras','optional')">
@@ -990,7 +998,6 @@ const uploadedFiles = {
   personas: null,
   empatia: null,
   proposta: null,
-  site: null,
   extras: null
 };
 
@@ -1090,7 +1097,6 @@ function buildFilesBlock(preview = false) {
     { key: 'personas', label: 'Personas do cliente ideal (A4)' },
     { key: 'empatia', label: 'Mapa de empatia (A2)' },
     { key: 'proposta', label: 'Proposta de valor (A3)' },
-    { key: 'site', label: 'Site / redes sociais' },
     { key: 'extras', label: 'Materiais extras' },
   ];
 
@@ -1122,10 +1128,13 @@ function updatePreview() {
 function buildPromptText(preview = false) {
   const nome = document.getElementById('nome').value || '[NOME DO CLIENTE]';
   const segmento = document.getElementById('segmento').value || '[SEGMENTO]';
-  const links = document.getElementById('links').value || 'Não fornecido';
+  const instagram = document.getElementById('instagram').value || 'Não fornecido';
+  const siteUrl = document.getElementById('site_url').value || 'Não fornecido';
+  const landing = document.getElementById('landing').value || 'Não fornecido';
   const mes = document.getElementById('mes').value || '[MÊS]';
   const organico = document.getElementById('qtd-organico').value || '[QTDE]';
   const pago = document.getElementById('qtd-pago').value || '[QTDE]';
+  const temas = document.getElementById('temas').value || 'Nenhum tema específico indicado — siga o mapeamento normal da Etapa 3';
   const obs = document.getElementById('obs').value || 'Nenhuma';
   const formatLine = buildFormatLine();
   const filesBlock = buildFilesBlock(preview);
@@ -1138,7 +1147,9 @@ DADOS DO CLIENTE
 
 Nome do cliente / empresa:    ${nome}
 Segmento:                     ${segmento}
-Site e redes sociais:         ${links}
+Instagram:                    ${instagram}
+Site:                         ${siteUrl}
+Landing page:                 ${landing}
 Mês de referência:            ${mes}
 Posts orgânicos este mês:     ${organico}
 Anúncios pagos este mês:      ${pago}
@@ -1146,12 +1157,18 @@ Mix de formatos orgânicos:    ${formatLine}
 Observações específicas:      ${obs}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TEMAS A DIRECIONAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${temas}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DOCUMENTOS FORNECIDOS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ${filesBlock}
 
-Analise todos os documentos anexados (o conteúdo de cada um está incluído acima). Se algum documento OBRIGATÓRIO estiver faltando (transcrição ou personas), informe claramente o impacto e pergunte se deve prosseguir. Se documentos recomendados estiverem faltando, adapte e sinalize o que ficou mais genérico.
+Analise todos os documentos anexados (o conteúdo de cada um está incluído acima). Nenhum documento é obrigatório — quanto mais documentos faltarem, mais genérico o conteúdo tende a ficar, então adapte-se ao que estiver disponível e sinalize claramente, no diagnóstico, quais documentos não foram fornecidos e qual o impacto disso na profundidade estratégica do resultado. Se houver Temas a direcionar acima, garanta que eles sejam contemplados no mapeamento de temas da Etapa 3.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROCESSO — SIGA ESTA ORDEM
@@ -1246,10 +1263,6 @@ function generatePrompt() {
   if (!nome || !segmento || !mes || !organico || !pago) {
     alert('Preencha pelo menos: Nome, Segmento, Mês, Quantidade de posts orgânicos e pagos.');
     return;
-  }
-  if (!uploadedFiles.transcricao || !uploadedFiles.personas) {
-    const seguir = confirm('A Transcrição e/ou as Personas não foram anexadas. O prompt ficará mais genérico. Deseja continuar mesmo assim?');
-    if (!seguir) return;
   }
 
   generatedPrompt = buildPromptText(false);
