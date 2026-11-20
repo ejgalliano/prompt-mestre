@@ -759,6 +759,17 @@
   .file-row {
     cursor: pointer;
   }
+
+  .style-group { border:1.5px solid var(--border); border-radius:10px; padding:14px 16px; }
+  .style-group-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .style-group-head strong { font-family:'Syne',sans-serif; font-size:13px; color:var(--ink); }
+  .style-group-head .count { font-size:11px; color:var(--muted); font-weight:500; margin-left:6px; }
+  .style-actions button { background:none; border:none; color:var(--accent-light); font-size:11px; font-weight:600; cursor:pointer; padding:2px 6px; font-family:'DM Sans',sans-serif; }
+  .style-actions button:hover { text-decoration:underline; }
+  .style-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px 14px; }
+  .style-chk { display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:var(--ink-soft); cursor:pointer; line-height:1.35; padding:3px 0; }
+  .style-chk input { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; margin-top:1px; }
+  @media (max-width: 560px) { .style-grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -916,6 +927,21 @@
             ⚠️ O total de formatos não bate com a quantidade de posts orgânicos.
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4: ESTILO DAS LEGENDAS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:#FDF2E9;">✍️</div>
+        <div>
+          <h2>Estilo das legendas</h2>
+          <p>Marque os estilos permitidos — a IA alterna entre eles conforme o tipo de conteúdo</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <span class="field-hint">Marque quantos quiser em cada grupo. A IA escolhe o mais adequado para cada post e evita repetir o mesmo estilo em posts seguidos. Grupo sem nenhuma marcação = a IA decide livremente, com variação.</span>
+        <div id="style-groups" style="display:flex;flex-direction:column;gap:14px;"></div>
       </div>
     </div>
 
@@ -1138,6 +1164,7 @@ function buildPromptText(preview = false) {
   const obs = document.getElementById('obs').value || 'Nenhuma';
   const formatLine = buildFormatLine();
   const filesBlock = buildFilesBlock(preview);
+  const styleBlock = buildStyleBlock();
 
   return `Você é um estrategista sênior de conteúdo para redes sociais especializado em marketing digital para empresas B2C e B2B de médio e alto padrão. Seu trabalho é produzir conteúdo estratégico completo, pronto para execução por um designer, com base nos documentos do cliente fornecidos.
 
@@ -1161,6 +1188,12 @@ TEMAS A DIRECIONAR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ${temas}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ESTILO DAS LEGENDAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${styleBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DOCUMENTOS FORNECIDOS
@@ -1195,6 +1228,7 @@ Use este bloco para cada post:
 
   POST #[N] | [CARROSSEL / CARD ÚNICO / REELS / STORIES]
   Pilar: [nome] | Tema: [título] | Especificação: [ex: 5 slides / 45s]
+  ESTILO: [tom] | GANCHO: [tipo] | CTA: [tipo]  (conforme a seção ESTILO DAS LEGENDAS)
   LEGENDA / ROTEIRO: [conteúdo completo]
   INSTRUÇÃO PARA O DESIGNER: [descrição visual detalhada]
 
@@ -1211,6 +1245,7 @@ Use este bloco para cada anúncio:
   Objetivo: [ex: lead / reconhecimento / conversão]
   Público: [idade, localização, interesses, nível de funil]
   Tipo: [Topo / Meio / Fundo de funil]
+  ESTILO: [tom] | GANCHO: [tipo] | CTA: [tipo]
   LEGENDA: [headline + corpo + CTA]
   INSTRUÇÃO PARA O DESIGNER: [criativo, cores, botão]
 
@@ -1223,6 +1258,7 @@ Responda e CORRIJA (não só aponte) se:
   3. Algum CTA está fraco?
   4. Distribuição de pilares equilibrada?
   5. Funil dos anúncios completo?
+  6. As legendas variam em estilo, gancho e CTA, respeitando as opções marcadas? Se duas soarem parecidas, reescreva uma delas.
 
 ETAPA 7 — CALENDÁRIO EDITORIAL
 Tabela: Data | Pilar | Conteúdo | Formato | Status
@@ -1240,6 +1276,7 @@ REGRAS INEGOCIÁVEIS
 5. Orgânico e pago coerentes — mesma narrativa de marca
 6. Tom de voz respeitado — nunca imponha estilo externo
 7. Formato serve o conteúdo — carrossel é escolha, não padrão
+8. Variedade de legendas — alterne estilos, ganchos e CTAs; nunca a mesma estrutura em posts seguidos
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ENTREGA FINAL
@@ -1293,7 +1330,126 @@ function copyPrompt() {
   });
 }
 
+
+// ===== ESTILO DAS LEGENDAS =====
+const STYLE_GROUPS = [
+  { id: 'tom', title: 'Estilo de escrita / tom', items: [
+    'Storytelling (história com começo, meio e fim)',
+    'Direto e objetivo',
+    'Provocativo (questiona crenças do público)',
+    'Educativo / didático',
+    'Bem-humorado e leve',
+    'Inspiracional / motivacional',
+    'Conversacional (como um papo com o cliente)',
+    'Técnico e de autoridade',
+    'Emocional / empático',
+    'Bastidores e pessoal (humaniza a marca)',
+    'Lista / passo a passo',
+    'Mito vs. verdade',
+    'Dados e fatos (números como protagonistas)',
+    'Depoimento / prova social narrada',
+    'Confronto antes/depois'
+  ]},
+  { id: 'gancho', title: 'Tipo de abertura (gancho da primeira linha)', items: [
+    'Pergunta que gera identificação',
+    'Dado ou número surpreendente',
+    'Afirmação polêmica ou contraintuitiva',
+    'Mini-história ("Outro dia, um cliente...")',
+    'Erro comum que o público comete',
+    'Cenário hipotético ("E se...")',
+    'Promessa de resultado',
+    'Alerta / aviso ("Pare de...")',
+    'Segredo ou revelação',
+    'Frase curta de impacto',
+    'Dor direta do público',
+    'Comparação inesperada'
+  ]},
+  { id: 'cta', title: 'Tipo de CTA (chamada para ação)', items: [
+    'Comentar (pergunta ou palavra-chave)',
+    'Salvar o post',
+    'Compartilhar com alguém',
+    'Marcar uma pessoa',
+    'Chamar no WhatsApp',
+    'Link da bio',
+    'Agendar conversa / diagnóstico / visita',
+    'Pedir orçamento / simulação',
+    'Responder enquete ou caixinha (Stories)',
+    'Baixar material gratuito',
+    'Seguir o perfil para mais conteúdo',
+    'Ativar notificações / acompanhar a série',
+    'Visitar o site ou a landing page',
+    'CTA suave (convite, sem pressão)',
+    'CTA com urgência / escassez'
+  ]},
+  { id: 'formatacao', title: 'Extensão e formatação da legenda', items: [
+    'Curta (até 3 linhas)',
+    'Média (1 a 2 parágrafos)',
+    'Longa (desenvolvida, com profundidade)',
+    'Parágrafos curtos, uma ideia por linha',
+    'Com tópicos / lista',
+    'Com emojis moderados',
+    'Sem emojis (tom mais sóbrio)',
+    'Com perguntas ao longo do texto',
+    'Com hashtags estratégicas no final',
+    'Sem hashtags',
+    'Primeira pessoa (eu / nós)',
+    'Segunda pessoa (você)'
+  ]}
+];
+
+function renderStyleGroups() {
+  const box = document.getElementById('style-groups');
+  box.innerHTML = STYLE_GROUPS.map(g => `
+    <div class="style-group" id="sg-${g.id}">
+      <div class="style-group-head">
+        <div><strong>${g.title}</strong><span class="count" id="sg-count-${g.id}">0 marcados</span></div>
+        <div class="style-actions">
+          <button type="button" onclick="toggleStyleGroup('${g.id}', true)">Marcar todos</button>
+          <button type="button" onclick="toggleStyleGroup('${g.id}', false)">Limpar</button>
+        </div>
+      </div>
+      <div class="style-grid">
+        ${g.items.map((it, i) => `
+          <label class="style-chk">
+            <input type="checkbox" data-group="${g.id}" value="${it.replace(/"/g, '&quot;')}" onchange="onStyleChange('${g.id}')">
+            <span>${it}</span>
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function getStyleSelection(groupId) {
+  return Array.from(document.querySelectorAll(`input[data-group="${groupId}"]:checked`)).map(i => i.value);
+}
+
+function onStyleChange(groupId) {
+  const n = getStyleSelection(groupId).length;
+  document.getElementById('sg-count-' + groupId).textContent = n + (n === 1 ? ' marcado' : ' marcados');
+  updatePreview();
+}
+
+function toggleStyleGroup(groupId, checked) {
+  document.querySelectorAll(`input[data-group="${groupId}"]`).forEach(i => i.checked = checked);
+  onStyleChange(groupId);
+}
+
+function buildStyleBlock() {
+  const lines = STYLE_GROUPS.map(g => {
+    const sel = getStyleSelection(g.id);
+    return sel.length
+      ? `${g.title}:\n${sel.map(x => '  • ' + x).join('\n')}`
+      : `${g.title}:\n  • Livre — escolha o mais adequado a cada post, variando entre opções diferentes`;
+  }).join('\n\n');
+
+  return `Para evitar legendas parecidas entre si, use SOMENTE os estilos marcados abaixo (quando houver marcação) e ALTERNE entre eles. Para cada post, escolha o estilo, o gancho, o CTA e a formatação mais adequados ao tipo de conteúdo, ao pilar, ao formato e ao momento do funil — não repita a mesma combinação em posts consecutivos e distribua o uso de todas as opções marcadas ao longo do mês.
+
+${lines}
+
+Em cada post, indique em uma linha antes da legenda: "Estilo: [tom] | Gancho: [tipo] | CTA: [tipo]".`;
+}
+
 // Init
+renderStyleGroups();
 document.getElementById('formato-manual').style.display = 'flex';
 document.getElementById('formato-manual').style.flexDirection = 'column';
 document.getElementById('formato-manual').style.gap = '12px';
